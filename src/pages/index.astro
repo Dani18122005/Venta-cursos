@@ -1,0 +1,74 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CourseSearchAndFilter from "../components/CourseSearchAndFilter.jsx";
+import { fetchPosts } from "../lib/firebase";
+
+const courses = await fetchPosts();
+---
+
+<BaseLayout>
+  <!-- Hero Section con Video -->
+  <section class="relative w-full h-screen overflow-hidden">
+    <video autoplay muted loop class="absolute top-0 left-0 w-full h-full object-cover">
+      <source src="assets/images/4kVideo.mp4" type="video/mp4">
+      Tu navegador no soporta videos.
+    </video>
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white text-center px-6">
+      <h1 class="text-6xl font-extrabold leading-tight">Descubre los Mejores Cursos</h1>
+      <p class="text-xl mt-4 max-w-2xl">Aprende de los mejores instructores con contenido de calidad y mejora tus habilidades profesionales.</p>
+    </div>
+  </section>
+
+  <!-- Cursos Destacados -->
+  <section class="relative py-12">
+    <div class="container mx-auto px-6">
+      <div class="flex items-center justify-between mb-6 bg-gray-100 rounded-lg p-4 shadow-md">
+        <button id="prevBtn" class="bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition">←</button>
+        <h2 class="text-3xl font-bold text-gray-900">Cursos Destacados</h2>
+        <button id="nextBtn" class="bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition">→</button>
+      </div>
+      
+      <!-- Contenedor con Scroll -->
+      <div id="courseScroll" class="flex overflow-x-scroll scrollbar-hide space-x-6 p-4">
+        {courses.map((course) => (
+          <div class="min-w-[320px] bg-white shadow-xl rounded-xl overflow-hidden transform hover:scale-105 transition-all">
+            <a href={`/blog/${course.slug}`}>
+              <img src={course.image} alt={course.title} class="w-full h-52 object-cover" />
+              <div class="p-5">
+                <h3 class="text-xl font-semibold text-gray-900">{course.title}</h3>
+                <p class="text-gray-600 text-sm mt-2">{course.description}</p>
+                <p class="text-blue-600 font-bold text-sm mt-3 uppercase">{course.category}</p>
+              </div>
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+<div class="cursos py-10 bg-gray-100 text-center text-3xl font-bold "><h2>Cursos a la Venta</h2></div>
+  <!-- Buscador y Filtros -->
+  <section class="py-10 bg-gray-100">
+    <div class="container mx-auto px-6">
+      <CourseSearchAndFilter client:load />
+    </div>
+  </section>
+
+  <!-- Script para el Scroll -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const scrollContainer = document.getElementById("courseScroll");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+  
+      if (scrollContainer && prevBtn && nextBtn) {
+        nextBtn.addEventListener("click", () => {
+          scrollContainer.scrollBy({ left: 320, behavior: "smooth" });
+        });
+  
+        prevBtn.addEventListener("click", () => {
+          scrollContainer.scrollBy({ left: -320, behavior: "smooth" });
+        });
+      }
+    });
+  </script>
+</BaseLayout>
