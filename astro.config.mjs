@@ -6,9 +6,11 @@ import 'dotenv/config';
 
 
 export default defineConfig({
+  output: 'static',
   integrations: [
     react(), // Agregar la integración de React
     tailwind()
+    
   ],
   vite: {
     css: {

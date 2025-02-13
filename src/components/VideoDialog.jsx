@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getCurrentUser } from '../lib/firebase';
+import { getCurrentUser, db } from '../lib/firebase';
+import { ref, get } from 'firebase/database';
 import '../styles/global.css';
 
 const VideoDialog = ({ course }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [isPurchased, setIsPurchased] = useState(course.isPurchased);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -15,28 +17,41 @@ const VideoDialog = ({ course }) => {
         setUser(null);
       }
     };
+
+    const fetchCourseData = async () => {
+      const courseRef = ref(db, `courses/${course.id}`);
+      try {
+        const snapshot = await get(courseRef);
+        if (snapshot.exists()) {
+          setIsPurchased(snapshot.val().isPurchased);
+        }
+      } catch (error) {
+        console.error("🔥 Error obteniendo curso desde Firebase:", error);
+      }
+    };
+
     fetchUser();
-  }, []);
+    fetchCourseData();
+  }, [course.id]);
 
   const handleViewContent = () => {
-    if (!user) {
-      alert('Debes iniciar sesión para ver el contenido del curso.');
-      window.location.href = '/login';
-    } else {
-      setIsOpen(true);
+    if (!isPurchased) {
+      alert("❌ Debes comprar este curso primero.");
+      return;
     }
+    setIsOpen(true);
   };
 
   return (
     <>
       <button
         onClick={handleViewContent}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
       >
         Ver Contenido
       </button>
 
-      {isOpen && (
+      {isOpen && isPurchased && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-96 relative">
             <button

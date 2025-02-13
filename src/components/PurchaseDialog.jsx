@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { db, getCurrentUser } from '../lib/firebase';
-import { ref, update } from 'firebase/database';
+import { ref, update, get } from 'firebase/database';
 import '../styles/global.css';
 
-const PurchaseDialog = ({ course }) => {
+const PurchaseDialog = ({ course,  }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPurchased, setIsPurchased] = useState(course.isPurchased || false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -18,8 +17,24 @@ const PurchaseDialog = ({ course }) => {
         setUser(null);
       }
     };
+
+    const fetchCourseData = async () => {
+      const courseRef = ref(db, `courses/${course.id}`);
+      try {
+        const snapshot = await get(courseRef);
+        if (snapshot.exists()) {
+          const purchased = snapshot.val().isPurchased;
+          setIsPurchased(purchased);
+          updateLocalCourses(course.id, purchased);
+        }
+      } catch (error) {
+        console.error(" Error obteniendo curso desde Firebase:", error);
+      }
+    };
+
     fetchUser();
-  }, []);
+    fetchCourseData();
+  }, [course.id]);
 
   const handlePurchase = async () => {
     if (!user) {
@@ -32,18 +47,18 @@ const PurchaseDialog = ({ course }) => {
       const courseRef = ref(db, `courses/${course.id}`);
       await update(courseRef, { isPurchased: true });
       setIsPurchased(true);
-      alert('Compra realizada con éxito');
+      alert('✅ Compra realizada con éxito.');
 
-      // ⏳ Espera 1 segundo y luego refresca la página
+      // 🔄 Forzar recarga completa de la página después de 1 segundo
       setTimeout(() => {
-        window.location.reload();
+        window.location.href = window.location.href;
       }, 1000);
-      
+
     } catch (error) {
-      console.error('Error al procesar la compra:', error);
-      setErrorMessage('Hubo un problema al procesar la compra. Inténtalo de nuevo.');
+      console.error(' Error al procesar la compra:', error);
     }
-  };
+};
+
 
   return (
     <>
@@ -79,7 +94,6 @@ const PurchaseDialog = ({ course }) => {
             >
               Cancelar
             </button>
-            {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
           </div>
         </div>
       )}

@@ -53,13 +53,15 @@ const post = await fetchPostBySlug(slug);
         </p>
 
         {/* Botón de acción */}
-        <div class="mt-8">
-          {post.isPurchased ? (
-            <VideoDialog client:load course={post} />
-          ) : (
-            <PurchaseDialog client:load course={post} />
-          )}
-        </div>
+        {/* 🔥 Botón de acción: SIEMPRE muestra los dos botones */}
+<div class="mt-8 flex gap-4">
+  {/* Botón de comprar */}
+  <PurchaseDialog client:load course={post}  />
+
+  {/* Botón de ver contenido (estará siempre, pero solo abrirá si está comprado) */}
+  <VideoDialog client:load course={post} />
+</div>
+
       </div>
     </article>
   ) : (
