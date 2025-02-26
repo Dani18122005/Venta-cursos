@@ -1,5 +1,6 @@
 ---
 import Navbar from "../components/Navbar.jsx";
+
 ---
 
 <html lang="es">
@@ -7,23 +8,44 @@ import Navbar from "../components/Navbar.jsx";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevMastery</title>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+          const idiomaGuardado = localStorage.getItem("idioma") || "es";
+          document.documentElement.lang = idiomaGuardado;
+      });
+
+      function cambiarIdioma(lang: string) {
+          localStorage.setItem("idioma", lang);
+          document.documentElement.lang = lang;
+          location.reload(); // Recargar la página para aplicar el cambio
+      }
+    </script>
   </head>
   <body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
-    <header class="bg-gray-800 text-white py-4 sticky top-0 z-50">
-      <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold">DevMastery</h1>
-        <Navbar client:load />
+   
+
+      
+
+      <header class="bg-gray-800 text-white py-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+          <h1 class="text-2xl font-bold">DevMastery</h1>
+          <Navbar client:load />
+        </div>
+        <div class="flex space-x-2">
+          <button onclick="cambiarIdioma('es')" class="px-4 py-2 bg-gray-600 text-white">🇪🇸 Español</button>
+          <button onclick="cambiarIdioma('en')" class="px-4 py-2 bg-gray-600 text-white">🇬🇧 English</button>
       </div>
-    </header>
+      
+      </header>
 
-  
+      <main class="flex-grow">
+        <slot />
+      </main>
 
-    <main class="flex-grow">
-      <slot />
-    </main>
+      <footer class="bg-gray-800 text-white py-4 text-center">
+        <p>&copy; 2025 Venta de Cursos. Todos los derechos reservados.</p>
+      </footer>
 
-    <footer class="bg-gray-800 text-white py-4 text-center">
-      <p>&copy; 2025 Venta de Cursos. Todos los derechos reservados.</p>
-    </footer>
+    
   </body>
 </html>

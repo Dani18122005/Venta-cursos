@@ -14,8 +14,8 @@ const courses = await fetchPosts();
       Tu navegador no soporta videos.
     </video>
     <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white text-center px-6">
-      <h1 class="text-6xl font-extrabold leading-tight">Descubre los Mejores Cursos</h1>
-      <p class="text-xl mt-4 max-w-2xl">Aprende de los mejores instructores con contenido de calidad y mejora tus habilidades profesionales.</p>
+      <h1 id="heroTitle" class="text-6xl font-extrabold leading-tight"></h1>
+      <p id="heroDescription" class="text-xl mt-4 max-w-2xl"></p>
     </div>
   </section>
 
@@ -24,7 +24,7 @@ const courses = await fetchPosts();
     <div class="container mx-auto px-6">
       <div class="flex items-center justify-between mb-6 bg-gray-100 rounded-lg p-4 shadow-md">
         <button id="prevBtn" class="bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition">←</button>
-        <h2 class="text-3xl font-bold text-gray-900">Cursos Destacados</h2>
+        <h2 id="featuredCourses" class="text-3xl font-bold text-gray-900"></h2>
         <button id="nextBtn" class="bg-gray-300 p-3 rounded-full hover:bg-gray-400 transition">→</button>
       </div>
       
@@ -45,7 +45,11 @@ const courses = await fetchPosts();
       </div>
     </div>
   </section>
-<div class="cursos py-10 bg-gray-100 text-center text-3xl font-bold "><h2>Cursos a la Venta</h2></div>
+
+  <div class="cursos py-10 bg-gray-100 text-center text-3xl font-bold">
+    <h2 id="coursesForSale"></h2>
+  </div>
+
   <!-- Buscador y Filtros -->
   <section class="py-10 bg-gray-100">
     <div class="container mx-auto px-6">
@@ -53,22 +57,53 @@ const courses = await fetchPosts();
     </div>
   </section>
 
-  <!-- Script para el Scroll -->
+  <!-- Script para el Scroll y Traducción -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const scrollContainer = document.getElementById("courseScroll");
-      const prevBtn = document.getElementById("prevBtn");
-      const nextBtn = document.getElementById("nextBtn");
+      console.log("Script cargado correctamente");
   
-      if (scrollContainer && prevBtn && nextBtn) {
-        nextBtn.addEventListener("click", () => {
-          scrollContainer.scrollBy({ left: 320, behavior: "smooth" });
-        });
+      // Obtener idioma de localStorage o usar español por defecto
+      const idioma = localStorage.getItem("lang") || "es";
+      console.log("Idioma seleccionado:", idioma);
   
-        prevBtn.addEventListener("click", () => {
-          scrollContainer.scrollBy({ left: -320, behavior: "smooth" });
-        });
+      // Traducciones
+      const traducciones = {
+        es: {
+          heroTitle: "Descubre los Mejores Cursos",
+          heroDescription: "Aprende de los mejores instructores con contenido de calidad y mejora tus habilidades profesionales.",
+          featuredCourses: "Cursos Destacados",
+          coursesForSale: "Cursos a la Venta"
+        },
+        en: {
+          heroTitle: "Discover the Best Courses",
+          heroDescription: "Learn from the best instructors with high-quality content and improve your professional skills.",
+          featuredCourses: "Featured Courses",
+          coursesForSale: "Courses for Sale"
+        }
+      };
+  
+      // Aplicar traducciones
+      function aplicarTraducciones() {
+        document.getElementById("heroTitle").innerText = traducciones[idioma].heroTitle;
+        document.getElementById("heroDescription").innerText = traducciones[idioma].heroDescription;
+        document.getElementById("featuredCourses").innerText = traducciones[idioma].featuredCourses;
+        document.getElementById("coursesForSale").innerText = traducciones[idioma].coursesForSale;
+        console.log("Traducciones aplicadas correctamente");
       }
+  
+      aplicarTraducciones();
+  
+      // Función global para cambiar idioma
+      window.cambiarIdioma = (nuevoIdioma) => {
+        localStorage.setItem("lang", nuevoIdioma);
+        location.reload(); // Recargar la página para aplicar cambios
+      };
+  
+      // Asignar eventos a los botones de idioma
+      document.getElementById("btn-es").addEventListener("click", () => cambiarIdioma("es"));
+      document.getElementById("btn-en").addEventListener("click", () => cambiarIdioma("en"));
     });
   </script>
+  
+  
 </BaseLayout>
